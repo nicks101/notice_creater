@@ -44,12 +44,12 @@ class _HomeScreenState extends State<HomeScreen> {
       fontWeight: pw.FontWeight.bold,
       fontSize: 50,
     );
-    final paragraphStyle = pw.TextStyle(fontSize: 30);
+    const paragraphStyle = pw.TextStyle(fontSize: 30);
 
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
-        margin: pw.EdgeInsets.all(32),
+        margin: const pw.EdgeInsets.all(32),
         build: (pw.Context context) {
           return <pw.Widget>[
             pw.Center(
@@ -81,12 +81,13 @@ class _HomeScreenState extends State<HomeScreen> {
     /// TODO: give user the option to set the name of file
     /// and other options like path to save, author, etc...
 
-    Directory documentDirectory = await path.getExternalStorageDirectory();
-    String documentPath = documentDirectory.path;
+    final Directory documentDirectory =
+        await path.getExternalStorageDirectory();
+    final String documentPath = documentDirectory.path;
 
     fileName = "$documentPath/example.pdf";
 
-    File file = File(fileName);
+    final File file = File(fileName);
     print(file.path);
     file.writeAsBytesSync(await pdf.save());
   }
@@ -102,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        title: Text('Create PDF Draft'),
+        title: const Text('Create PDF Draft'),
       ),
       body: SingleChildScrollView(
         reverse: true,
@@ -112,49 +113,39 @@ class _HomeScreenState extends State<HomeScreen> {
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Wrap(spacing: 20, children: [
               _speechButton('Title', () {
-                speech.listen(
-                    partialResults: true,
-                    onResult: (SpeechRecognitionResult result) {
-                      setState(() {
-                        _title = result.recognizedWords;
-                      });
-                    });
+                speech.listen(onResult: (SpeechRecognitionResult result) {
+                  setState(() {
+                    _title = result.recognizedWords;
+                  });
+                });
               }),
               _speechButton('Description', () {
-                speech.listen(
-                    partialResults: true,
-                    onResult: (SpeechRecognitionResult result) {
-                      setState(() {
-                        _description = result.recognizedWords;
-                      });
-                    });
+                speech.listen(onResult: (SpeechRecognitionResult result) {
+                  setState(() {
+                    _description = result.recognizedWords;
+                  });
+                });
               }),
               _speechButton('Party 1', () {
-                speech.listen(
-                    partialResults: true,
-                    onResult: (SpeechRecognitionResult result) {
-                      setState(() {
-                        _party1 = result.recognizedWords;
-                      });
-                    });
+                speech.listen(onResult: (SpeechRecognitionResult result) {
+                  setState(() {
+                    _party1 = result.recognizedWords;
+                  });
+                });
               }),
               _speechButton('Party 2', () {
-                speech.listen(
-                    partialResults: true,
-                    onResult: (SpeechRecognitionResult result) {
-                      setState(() {
-                        _party2 = result.recognizedWords;
-                      });
-                    });
+                speech.listen(onResult: (SpeechRecognitionResult result) {
+                  setState(() {
+                    _party2 = result.recognizedWords;
+                  });
+                });
               }),
               _speechButton('Party 3', () {
-                speech.listen(
-                    partialResults: true,
-                    onResult: (SpeechRecognitionResult result) {
-                      setState(() {
-                        _party3 = result.recognizedWords;
-                      });
-                    });
+                speech.listen(onResult: (SpeechRecognitionResult result) {
+                  setState(() {
+                    _party3 = result.recognizedWords;
+                  });
+                });
               }),
             ]),
             _displayHeader(),
@@ -180,11 +171,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _displayHeader() => Column(
         children: [
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Center(
               child: Text(
             _title?.toUpperCase() ?? '',
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
@@ -195,10 +186,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _displayParagraph(String text) => Column(
         children: [
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
             text ?? '',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
             ),
             textAlign: TextAlign.left,
@@ -206,43 +197,41 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       );
 
-  Widget _bottomButton() => Container(
-        child: FlatButton(
-          color: Theme.of(context).primaryColor,
-          onPressed: isGeneratingPDF
-              ? null
-              : () async {
-                  /// TODO: add a check for empty notice instance
+  Widget _bottomButton() => FlatButton(
+        color: Theme.of(context).primaryColor,
+        onPressed: isGeneratingPDF
+            ? null
+            : () async {
+                /// TODO: add a check for empty notice instance
 
+                setState(() {
+                  isGeneratingPDF = true;
+                });
+
+                final Notice notice = Notice(
+                  title: _title,
+                  description: _description,
+                  party1: _party1,
+                  party2: _party2,
+                  party3: _party3,
+                );
+
+                await generatePDF(notice).then((_) async {
                   setState(() {
-                    isGeneratingPDF = true;
+                    isGeneratingPDF = false;
                   });
 
-                  Notice notice = Notice(
-                    title: _title,
-                    description: _description,
-                    party1: _party1,
-                    party2: _party2,
-                    party3: _party3,
-                  );
-
-                  await generatePDF(notice).then((_) async {
-                    setState(() {
-                      isGeneratingPDF = false;
-                    });
-
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PdfPreviewScreen(
-                            path: fileName,
-                          ),
-                        ));
-                  });
-                },
-          child: isGeneratingPDF
-              ? CircularProgressIndicator()
-              : Text('Convert to PDF'),
-        ),
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PdfPreviewScreen(
+                          path: fileName,
+                        ),
+                      ));
+                });
+              },
+        child: isGeneratingPDF
+            ? const CircularProgressIndicator()
+            : const Text('Convert to PDF'),
       );
 }
