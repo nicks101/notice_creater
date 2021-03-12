@@ -17,4 +17,5 @@ Dictate a notice draft and view and download it.
 - [ ] Ask user the `file name`, `author name`, etc.
 - [ ] set custom fonts for pdf generated.
 - [ ] Give user the option to select the path for the document tot be downloaded. 
+- [ ] Adding Github Actions for CI/CD and labels.
 
