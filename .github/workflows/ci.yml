@@ -16,6 +16,7 @@ jobs:
           java-version: '12.x'
       - uses: subosito/flutter-action@v1
         with:
+          flutter-version: '1.22.6'
           channel: 'stable'
       - run: flutter pub get
       - name: Lint
@@ -32,6 +33,7 @@ jobs:
           java-version: '12.x'
       - uses: subosito/flutter-action@v1
         with:
+          flutter-version: '1.22.6'
           channel: 'stable'
       - name: Build apk package
         run: flutter build apk --release
@@ -45,6 +47,7 @@ jobs:
           java-version: '12.x'
       - uses: subosito/flutter-action@v1
         with:
+          flutter-version: '1.22.6'
           channel: 'stable'
       - name: build iOS package
         run: flutter build ios --release --no-codesign
